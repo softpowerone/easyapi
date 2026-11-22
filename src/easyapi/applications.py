@@ -1,0 +1,4 @@
+"""класс EasyAPI"""
+
+class EasyAPI:
+    ...

@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "easyapi"
+version = "0.0.1"
+description = "Build an MVP backend in 30 minutes"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio", "httpx", "uvicorn"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/easyapi"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
