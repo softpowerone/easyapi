@@ -1,4 +1,7 @@
 """класс EasyAPI"""
+from easyapi.requests import Request
+from easyapi.responses import Response
+
 
 class EasyAPI:
     ...
@@ -7,14 +10,7 @@ class EasyAPI:
         if scope["type"] != "http":
             return
 
-        await send(
-            {
-                "type": "http.response.start",
-                "status": 200,
-                "headers": [(b"content-type", b"application/json")],
-            },
-        )
-        await send({
-            "type": "http.response.body",
-            "body": b'{"ok": true}',
-        })
+        request = Request(scope, receive)
+        name = request.query_params.get("name", "world")
+        response = Response(f"Hello, {name}")
+        await response(send)
