@@ -1,4 +1,5 @@
 """класс EasyAPI"""
+from .params import build_kwargs
 from .requests import Request
 from .responses import Response
 from .routing import Router
@@ -16,10 +17,16 @@ class EasyAPI:
             return
 
         request = Request(scope, receive)
-        handler, allowed = self.router.resolve(request.method, request.path)
+        handler, allowed, path_params = self.router.resolve(request.method, request.path)
 
         if handler is not None:
-            response = await handler(request)
+            try:
+                kwargs = build_kwargs(handler, request, path_params)
+            except ValueError:
+                response = Response("Unprocessable Entity", status=422)
+            else:
+                response = await handler(**kwargs)
+
         elif allowed:
             response = Response(
                 "Method Not Allowed",
