@@ -26,9 +26,14 @@ def build_kwargs(handler: Handler, request: Request, path_params: dict[str, str]
     sig = inspect.signature(handler)
     hints = get_type_hints(handler)
     kwargs: dict[str, Any] = {}
-    for name in sig.parameters:
+    for name, param in sig.parameters.items():
         if name == "request":
             kwargs[name] = request
         elif name in path_params:
             kwargs[name] = convert(path_params[name], hints.get(name, str))
+        elif name in request.query_params:
+            kwargs[name] = convert(request.query_params[name], hints.get(name, str))
+
+        elif param.default is inspect.Parameter.empty:
+            raise ValueError(f"missing query parameter: {name}")
     return kwargs
