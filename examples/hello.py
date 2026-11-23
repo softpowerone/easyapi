@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from easyapi import EasyAPI, Request, Response
+from easyapi import EasyAPI, Request, Response, Depends
 
 app = EasyAPI()
 
@@ -35,3 +35,10 @@ class Item(BaseModel):
 @app.post("/items")
 async def create(item: Item):
     return {"name": item.name, "price": item.price}
+
+def get_db():
+    return {"connected": True}
+
+@app.get("/users")
+async def users(db=Depends(get_db)):
+    return {"db": db}

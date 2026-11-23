@@ -6,6 +6,7 @@ from typing import Any, get_type_hints
 from pydantic import BaseModel
 
 from ._types import Handler
+from .dependencies import Depends
 from .requests import Request
 
 
@@ -26,13 +27,23 @@ def convert(value: str, annotation: Any) -> Any:
         raise ValueError(f"invalid bool: {value!r}")
     return value
 
-async def build_kwargs(handler: Handler, request: Request, path_params: dict[str, str]) -> dict[str, Any]:
+async def build_kwargs(handler: Handler, request: Request, path_params: dict[str, str], cache=None) -> dict[str, Any]:
+    cache = {} if cache is None else cache
     sig = inspect.signature(handler)
     hints = get_type_hints(handler)
     kwargs: dict[str, Any] = {}
     for name, param in sig.parameters.items():
         if name == "request":
             kwargs[name] = request
+        elif isinstance(param.default, Depends):
+            dep = param.default.dependency
+            if dep not in cache:
+                sub_kwargs = await build_kwargs(dep, request, path_params, cache)
+                result = dep(**sub_kwargs)
+                if inspect.isawaitable(result):
+                    result = await result
+                cache[dep] = result
+            kwargs[name] = cache[dep]
         elif is_model(hints.get(name)):
             raw = await request.body()
             kwargs[name] = hints[name].model_validate_json(raw)

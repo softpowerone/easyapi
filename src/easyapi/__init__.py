@@ -3,5 +3,6 @@
 from .applications import EasyAPI
 from .responses import Response, JSONResponse
 from .requests import Request
+from .dependencies import Depends
 
-__all__ = ["EasyAPI", "Request", "Response", "JSONResponse"]
+__all__ = ["EasyAPI", "Request", "Response", "JSONResponse", "Depends"]
