@@ -1,4 +1,5 @@
 """Формирование и отправка HTTP-ответа."""
+import json
 
 from ._types import Send
 
@@ -33,3 +34,18 @@ class Response:
                 "body": self.body,
             }
         )
+
+
+class JSONResponse(Response):
+    def __init__(self, content, status: int = 200, headers: dict[str, str] | None = None) -> None:
+        merged = {"content-type": "application/json"}
+        if headers:
+            merged.update({k.lower(): v for k, v in headers.items()})
+        body = json.dumps(content, ensure_ascii=False).encode()
+        super().__init__(body, status, merged)
+
+
+def make_response(result) -> Response:
+    if isinstance(result, Response):
+        return result
+    return JSONResponse(result)

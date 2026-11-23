@@ -24,4 +24,4 @@ async def greet(name: str = "world"):
 
 @app.get("/add")
 async def add(a: int, b: int = 0):
-    return Response(str(a + b))
+    return {"Response(str(a + b))": "FSD"}

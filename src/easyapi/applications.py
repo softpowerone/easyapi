@@ -1,7 +1,7 @@
 """класс EasyAPI"""
 from .params import build_kwargs
 from .requests import Request
-from .responses import Response
+from .responses import Response, make_response
 from .routing import Router
 
 
@@ -25,7 +25,8 @@ class EasyAPI:
             except ValueError:
                 response = Response("Unprocessable Entity", status=422)
             else:
-                response = await handler(**kwargs)
+                results = await handler(**kwargs)
+                response = make_response(results)
 
         elif allowed:
             response = Response(
