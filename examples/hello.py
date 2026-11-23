@@ -1,3 +1,5 @@
+from pydantic import BaseModel
+
 from easyapi import EasyAPI, Request, Response
 
 app = EasyAPI()
@@ -24,4 +26,12 @@ async def greet(name: str = "world"):
 
 @app.get("/add")
 async def add(a: int, b: int = 0):
-    return {"Response(str(a + b))": "FSD"}
+    return Response(str(a + b))
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+@app.post("/items")
+async def create(item: Item):
+    return {"name": item.name, "price": item.price}

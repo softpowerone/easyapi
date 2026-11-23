@@ -1,7 +1,11 @@
 """класс EasyAPI"""
+import json
+
+from pydantic import ValidationError
+
 from .params import build_kwargs
 from .requests import Request
-from .responses import Response, make_response
+from .responses import Response, make_response, JSONResponse
 from .routing import Router
 
 
@@ -12,6 +16,18 @@ class EasyAPI:
     def get(self, path: str):
         return self.router.get(path)
 
+    def post(self, path: str):
+        return self.router.post(path)
+
+    def put(self, path: str):
+        return self.router.put(path)
+
+    def patch(self, path: str):
+        return self.router.patch(path)
+
+    def delete(self, path: str):
+        return self.router.delete(path)
+
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http":
             return
@@ -21,12 +37,15 @@ class EasyAPI:
 
         if handler is not None:
             try:
-                kwargs = build_kwargs(handler, request, path_params)
-            except ValueError:
-                response = Response("Unprocessable Entity", status=422)
+                kwargs = await build_kwargs(handler, request, path_params)
+            except ValidationError as exc:
+                response = JSONResponse(
+                    {"detail": json.loads(exc.json(include_url=False))}, status=422
+                )
+            except ValueError as exc:
+                response = JSONResponse({"detail": str(exc)}, status=422)
             else:
-                results = await handler(**kwargs)
-                response = make_response(results)
+                response = make_response(await handler(**kwargs))
 
         elif allowed:
             response = Response(

@@ -40,11 +40,27 @@ class Router:
         route.methods[method.upper()] = handler
         self._routes.append(route)
 
-    def get(self, path: str) -> Callable[[Handler], Handler]:
+    def route(self, method: str, path: str) -> Callable[[Handler], Handler]:
         def decorator(handler: Handler) -> Handler:
-            self.add_route("GET", path, handler)
+            self.add_route(method, path, handler)
             return handler
+
         return decorator
+
+    def get(self, path: str):
+        return self.route("GET", path)
+
+    def post(self, path: str):
+        return self.route("POST", path)
+
+    def put(self, path: str):
+        return self.route("PUT", path)
+
+    def patch(self, path: str):
+        return self.route("PATCH", path)
+
+    def delete(self, path: str):
+        return self.route("DELETE", path)
 
     def resolve(self, method: str, path: str) -> tuple[Handler | None, list[str], dict[str, str]]:
         for route in self._routes:

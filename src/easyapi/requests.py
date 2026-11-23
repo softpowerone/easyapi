@@ -7,6 +7,7 @@ class Request:
     def __init__(self, scope, receive):
         self._scope = scope
         self._receive = receive
+        self._body: bytes | None = None
 
     @property
     def method(self) -> str:
@@ -29,10 +30,12 @@ class Request:
         }
 
     async def body(self) -> bytes:
-        chunks = b""
-        while True:
-            message = await self._receive()
-            chunks += message.get("body", b"")
-            if not message.get("more_body", False):
-                break
-        return chunks
+        if self._body is None:
+            chunks = b""
+            while True:
+                message = await self._receive()
+                chunks += message.get("body", b"")
+                if not message.get("more_body", False):
+                    break
+            self._body = chunks
+        return self._body
