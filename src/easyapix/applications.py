@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from ._types import Scope, Receive, Send
 from .concurrency import call_maybe_sync
-from .exeptions import HTTPException
+from .exeptions import HTTPException, ParameterError
 from .params import build_kwargs
 from .requests import Request
 from .responses import Response, make_response, JSONResponse
@@ -76,7 +76,7 @@ class EasyAPIx:
                 return JSONResponse(
                     {"detail": json.loads(exc.json(include_url=False))}, status=422
                 )
-            except ValueError as exc:
+            except ParameterError as exc:
                 return JSONResponse({"detail": str(exc)}, status=422)
             return make_response(await call_maybe_sync(handler, **kwargs))
         except HTTPException as exc:

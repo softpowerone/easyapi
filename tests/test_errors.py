@@ -91,3 +91,17 @@ async def test_value_error_in_handler_is_500_not_422():
 
     async with client_for(app) as c:
         assert (await c.get("/x")).status_code == 500
+
+
+async def test_value_error_in_dependency_is_500():
+    app = EasyAPIx()
+
+    def dep():
+        raise ValueError("bug")
+
+    @app.get("/x")
+    async def x(d=Depends(dep)):
+        return {}
+
+    async with client_for(app) as c:
+        assert (await c.get("/x")).status_code == 500

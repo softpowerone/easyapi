@@ -14,3 +14,7 @@ class HTTPException(Exception):
         self.detail = detail if detail is not None else HTTPStatus(status_code).phrase
         self.headers = headers
         super().__init__(self.detail)
+
+
+class ParameterError(ValueError):
+    """Параметр запроса отсутствует или не приводится к нужному типу."""
