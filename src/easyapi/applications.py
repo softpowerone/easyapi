@@ -1,17 +1,23 @@
 """класс EasyAPI"""
 import json
+import logging
 
 from pydantic import ValidationError
 
+from ._types import Scope, Receive, Send
+from .exeptions import HTTPException
 from .params import build_kwargs
 from .requests import Request
 from .responses import Response, make_response, JSONResponse
 from .routing import Router
 
+logger = logging.getLogger("easyapi")
+
 
 class EasyAPI:
     def __init__(self) -> None:
         self.router = Router()
+        self._stack = self._dispatch
 
     def get(self, path: str):
         return self.router.get(path)
@@ -28,32 +34,43 @@ class EasyAPI:
     def delete(self, path: str):
         return self.router.delete(path)
 
-    async def __call__(self, scope, receive, send):
+    def add_middleware(self, middleware_class, **options) -> None:
+        self._stack = middleware_class(self._stack, **options)
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        await self._stack(scope, receive, send)
+
+    async def _dispatch(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
             return
-
         request = Request(scope, receive)
+        response = await self._handle(request)
+        await response(send)
+
+    async def _handle(self, request: Request) -> Response:
         handler, allowed, path_params = self.router.resolve(request.method, request.path)
 
-        if handler is not None:
+        if handler is None:
+            if allowed:
+                return JSONResponse(
+                    {"detail": "Method Not Allowed"},
+                    status=405,
+                    headers={"allow": ", ".join(sorted(allowed))},
+                )
+            return JSONResponse({"detail": "Not Found"}, status=404)
+
+        try:
             try:
                 kwargs = await build_kwargs(handler, request, path_params)
             except ValidationError as exc:
-                response = JSONResponse(
+                return JSONResponse(
                     {"detail": json.loads(exc.json(include_url=False))}, status=422
                 )
             except ValueError as exc:
-                response = JSONResponse({"detail": str(exc)}, status=422)
-            else:
-                response = make_response(await handler(**kwargs))
-
-        elif allowed:
-            response = Response(
-                "Method Not Allowed",
-                status=405,
-                headers={"allow": ", ".join(sorted(allowed))},
-            )
-        else:
-            response = Response("Not Found", status=404)
-
-        await response(send)
+                return JSONResponse({"detail": str(exc)}, status=422)
+            return make_response(await handler(**kwargs))
+        except HTTPException as exc:
+            return JSONResponse({"detail": exc.detail}, status=exc.status_code, headers=exc.headers)
+        except Exception:
+            logger.exception("Unhandled error in %s %s", request.method, request.path)
+            return JSONResponse({"detail": "Internal Server Error"}, status=500)
