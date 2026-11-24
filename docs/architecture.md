@@ -1,15 +1,15 @@
 # Architecture
 
-EasyAPI is a lightweight ASGI framework for building MVP backends quickly. This document describes how the codebase is organized and how a request moves through it.
+EasyAPIx is a lightweight ASGI framework for building MVP backends quickly. This document describes how the codebase is organized and how a request moves through it.
 
 ## Layers
 
 ```
 Server (uvicorn)   accepts connections, parses HTTP, calls the ASGI app
-EasyAPI            routing, parameter binding, validation, dependencies, middleware
+EasyAPIx            routing, parameter binding, validation, dependencies, middleware
 ```
 
-EasyAPI does not implement an HTTP server. It is a standard ASGI application: any ASGI server can run it.
+EasyAPIx does not implement an HTTP server. It is a standard ASGI application: any ASGI server can run it.
 
 ## Modules
 
@@ -22,7 +22,7 @@ EasyAPI does not implement an HTTP server. It is a standard ASGI application: an
 | `params.py` | `convert` and `build_kwargs`: builds handler arguments from its signature (request, path, query, Pydantic body, `Depends`). |
 | `dependencies.py` | `Depends`: dependency marker. |
 | `exceptions.py` | `HTTPException`. |
-| `applications.py` | `EasyAPI`: ties the parts together, implements the ASGI interface, manages middleware. |
+| `applications.py` | `EasyAPIx`: ties the parts together, implements the ASGI interface, manages middleware. |
 | `__init__.py` | Public API (`__all__`). |
 
 ## Dependency rule

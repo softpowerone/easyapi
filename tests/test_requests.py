@@ -1,4 +1,4 @@
-from easyapi.requests import Request
+from easyapix.requests import Request
 
 
 def make_request(scope=None, messages=None):

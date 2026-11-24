@@ -1,6 +1,6 @@
 import httpx
 
-from easyapi import Depends, EasyAPI
+from easyapix import Depends, EasyAPIx
 
 
 def client_for(app):
@@ -9,7 +9,7 @@ def client_for(app):
 
 
 async def test_simple_dependency():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     def get_value():
         return 42
@@ -23,7 +23,7 @@ async def test_simple_dependency():
 
 
 async def test_async_dependency():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     async def get_value():
         return "async"
@@ -37,7 +37,7 @@ async def test_async_dependency():
 
 
 async def test_nested_dependency():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     def base():
         return 10
@@ -54,7 +54,7 @@ async def test_nested_dependency():
 
 
 async def test_dependency_uses_query_param():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     def get_user(user: str = "anon"):
         return user
@@ -69,7 +69,7 @@ async def test_dependency_uses_query_param():
 
 
 async def test_dependency_called_once_per_request():
-    app = EasyAPI()
+    app = EasyAPIx()
     calls = []
 
     def counter():
@@ -90,7 +90,7 @@ async def test_dependency_called_once_per_request():
 
 
 async def test_dependency_missing_required_param_422():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     def need_token(token: str):
         return token

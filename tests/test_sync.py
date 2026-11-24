@@ -4,7 +4,7 @@ import time
 
 import httpx
 
-from easyapi import Depends, EasyAPI, HTTPException
+from easyapix import Depends, EasyAPIx, HTTPException
 
 
 def client_for(app):
@@ -13,7 +13,7 @@ def client_for(app):
 
 
 async def test_sync_handler():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/x")
     def x():
@@ -24,7 +24,7 @@ async def test_sync_handler():
 
 
 async def test_sync_handler_with_params():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/sq/{n}")
     def sq(n: int, add: int = 0):
@@ -35,7 +35,7 @@ async def test_sync_handler_with_params():
 
 
 async def test_sync_handler_runs_in_other_thread():
-    app = EasyAPI()
+    app = EasyAPIx()
     main_thread = threading.get_ident()
 
     @app.get("/t")
@@ -47,7 +47,7 @@ async def test_sync_handler_runs_in_other_thread():
 
 
 async def test_sync_dependency():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     def get_value():
         return 7
@@ -61,7 +61,7 @@ async def test_sync_dependency():
 
 
 async def test_http_exception_from_sync_handler():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/x")
     def x():
@@ -74,7 +74,7 @@ async def test_http_exception_from_sync_handler():
 
 
 async def test_unexpected_error_in_sync_handler_is_500():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/x")
     def x():
@@ -85,7 +85,7 @@ async def test_unexpected_error_in_sync_handler_is_500():
 
 
 async def test_blocking_sync_handler_does_not_block_loop():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/slow")
     def slow():

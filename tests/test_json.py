@@ -1,6 +1,6 @@
 import httpx
 
-from easyapi import EasyAPI, JSONResponse, Response
+from easyapix import EasyAPIx, JSONResponse, Response
 
 
 async def client_for(app):
@@ -9,7 +9,7 @@ async def client_for(app):
 
 
 async def test_dict_becomes_json():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/user/{id}")
     async def user(id: int):
@@ -23,7 +23,7 @@ async def test_dict_becomes_json():
 
 
 async def test_list_becomes_json():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/items")
     async def items():
@@ -34,7 +34,7 @@ async def test_list_becomes_json():
 
 
 async def test_response_passes_through():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/text")
     async def text():
@@ -47,7 +47,7 @@ async def test_response_passes_through():
 
 
 async def test_json_response_custom_status():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/nope")
     async def nope():

@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from easyapi import EasyAPI
+from easyapix import EasyAPIx
 
 
 async def run_lifespan(app):
@@ -18,7 +18,7 @@ async def run_lifespan(app):
 
 
 async def test_lifespan_without_handler():
-    sent = await run_lifespan(EasyAPI())
+    sent = await run_lifespan(EasyAPIx())
     assert sent == ["lifespan.startup.complete", "lifespan.shutdown.complete"]
 
 
@@ -31,7 +31,7 @@ async def test_lifespan_runs_startup_and_shutdown_in_order():
         yield
         events.append("stop")
 
-    sent = await run_lifespan(EasyAPI(lifespan=lifespan))
+    sent = await run_lifespan(EasyAPIx(lifespan=lifespan))
     assert events == ["start", "stop"]
     assert sent == ["lifespan.startup.complete", "lifespan.shutdown.complete"]
 
@@ -51,7 +51,7 @@ async def test_startup_failure():
     async def send(message):
         sent.append(message)
 
-    await EasyAPI(lifespan=lifespan)({"type": "lifespan"}, receive, send)
+    await EasyAPIx(lifespan=lifespan)({"type": "lifespan"}, receive, send)
     assert sent == [{"type": "lifespan.startup.failed", "message": "no db"}]
 
 
@@ -61,5 +61,5 @@ async def test_shutdown_failure():
         yield
         raise RuntimeError("cleanup failed")
 
-    sent = await run_lifespan(EasyAPI(lifespan=lifespan))
+    sent = await run_lifespan(EasyAPIx(lifespan=lifespan))
     assert sent == ["lifespan.startup.complete", "lifespan.shutdown.failed"]

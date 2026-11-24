@@ -1,8 +1,8 @@
 import httpx
 import pytest
 
-from easyapi import EasyAPI, Response
-from easyapi.params import convert
+from easyapix import EasyAPIx, Response
+from easyapix.params import convert
 
 
 def test_convert():
@@ -15,7 +15,7 @@ def test_convert():
 
 
 async def test_path_params_end_to_end():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/square/{n}")
     async def square(n: int):
@@ -27,7 +27,7 @@ async def test_path_params_end_to_end():
         assert (await c.get("/square/abc")).status_code == 422
 
 async def make_client():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/greet")
     async def greet(name: str = "world"):

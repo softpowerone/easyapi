@@ -1,4 +1,4 @@
-"""класс EasyAPI"""
+"""класс EasyAPIx"""
 import json
 import logging
 from contextlib import asynccontextmanager
@@ -13,14 +13,14 @@ from .requests import Request
 from .responses import Response, make_response, JSONResponse
 from .routing import Router
 
-logger = logging.getLogger("easyapi")
+logger = logging.getLogger("easyapix")
 
 @asynccontextmanager
 async def _noop_lifespan(app):
     yield
 
 
-class EasyAPI:
+class EasyAPIx:
     def __init__(self, lifespan=None) -> None:
         self.router = Router()
         self._lifespan = lifespan or _noop_lifespan

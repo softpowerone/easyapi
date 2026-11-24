@@ -1,4 +1,4 @@
-from easyapi.responses import Response
+from easyapix.responses import Response
 
 
 async def run(response):

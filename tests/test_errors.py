@@ -1,6 +1,6 @@
 import httpx
 
-from easyapi import Depends, EasyAPI, HTTPException
+from easyapix import Depends, EasyAPIx, HTTPException
 
 
 def client_for(app):
@@ -9,14 +9,14 @@ def client_for(app):
 
 
 async def test_404_is_json():
-    async with client_for(EasyAPI()) as c:
+    async with client_for(EasyAPIx()) as c:
         r = await c.get("/nope")
     assert r.status_code == 404
     assert r.json() == {"detail": "Not Found"}
 
 
 async def test_405_is_json_with_allow():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/a")
     async def a():
@@ -30,7 +30,7 @@ async def test_405_is_json_with_allow():
 
 
 async def test_http_exception_in_handler():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/u/{id}")
     async def u(id: int):
@@ -43,7 +43,7 @@ async def test_http_exception_in_handler():
 
 
 async def test_http_exception_default_detail_and_headers():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/x")
     async def x():
@@ -56,7 +56,7 @@ async def test_http_exception_default_detail_and_headers():
 
 
 async def test_http_exception_in_dependency():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     def guard():
         raise HTTPException(401, "nope")
@@ -70,7 +70,7 @@ async def test_http_exception_in_dependency():
 
 
 async def test_unexpected_error_is_500():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/boom")
     async def boom():
@@ -83,7 +83,7 @@ async def test_unexpected_error_is_500():
 
 
 async def test_value_error_in_handler_is_500_not_422():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/x")
     async def x():

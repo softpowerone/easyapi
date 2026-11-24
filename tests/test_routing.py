@@ -1,4 +1,4 @@
-from easyapi.routing import Router
+from easyapix.routing import Router
 
 
 def test_resolve_found():

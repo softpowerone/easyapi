@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from pydantic import BaseModel
 
-from easyapi import EasyAPI, Request, Response, Depends
+from easyapix import EasyAPIx, Request, Response, Depends
 
 @asynccontextmanager
 async def lifespan(app):
@@ -11,7 +11,7 @@ async def lifespan(app):
     print("shutdown: closing resources")
 
 
-app = EasyAPI(lifespan=lifespan)
+app = EasyAPIx(lifespan=lifespan)
 
 
 @app.get("/")
@@ -55,7 +55,7 @@ async def users(db=Depends(get_db)):
 
 import time
 
-from easyapi import Depends, HTTPException
+from easyapix import Depends, HTTPException
 
 
 class TimingMiddleware:

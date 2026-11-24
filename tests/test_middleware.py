@@ -1,6 +1,6 @@
 import httpx
 
-from easyapi import EasyAPI
+from easyapix import EasyAPIx
 
 
 def client_for(app):
@@ -23,7 +23,7 @@ class HeaderMiddleware:
 
 
 async def test_middleware_adds_header_with_options():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.get("/")
     async def index():
@@ -36,7 +36,7 @@ async def test_middleware_adds_header_with_options():
 
 
 async def test_middleware_wraps_404_too():
-    app = EasyAPI()
+    app = EasyAPIx()
     app.add_middleware(HeaderMiddleware)
     async with client_for(app) as c:
         r = await c.get("/nope")
@@ -45,7 +45,7 @@ async def test_middleware_wraps_404_too():
 
 
 async def test_middleware_order_last_added_is_outermost():
-    app = EasyAPI()
+    app = EasyAPIx()
     calls = []
 
     def make(name):

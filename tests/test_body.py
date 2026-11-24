@@ -1,7 +1,7 @@
 import httpx
 from pydantic import BaseModel
 
-from easyapi import EasyAPI
+from easyapix import EasyAPIx
 
 
 class Item(BaseModel):
@@ -10,7 +10,7 @@ class Item(BaseModel):
 
 
 def make_client():
-    app = EasyAPI()
+    app = EasyAPIx()
 
     @app.post("/items")
     async def create(item: Item):
