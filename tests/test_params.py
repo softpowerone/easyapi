@@ -1,3 +1,5 @@
+from typing import Optional
+
 import httpx
 import pytest
 
@@ -65,3 +67,8 @@ async def test_query_missing_required_422():
 async def test_query_bad_type_422():
     async with await make_client() as c:
         assert (await c.get("/add", params={"a": "x"})).status_code == 422
+
+
+def test_convert_optional():
+    assert convert("5", Optional[int]) == 5
+    assert convert("5", int | None) == 5

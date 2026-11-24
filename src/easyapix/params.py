@@ -1,8 +1,8 @@
 """Сборка аргументов handler по его сигнатуре."""
 
 import inspect
-from typing import Any, get_type_hints
-
+import types
+from typing import Any, Union, get_args, get_origin, get_type_hints
 from pydantic import BaseModel
 
 from ._types import Handler
@@ -16,6 +16,11 @@ def is_model(annotation) -> bool:
     return inspect.isclass(annotation) and issubclass(annotation, BaseModel)
 
 def convert(value: str, annotation: Any) -> Any:
+    origin = get_origin(annotation)
+    if origin is Union or origin is types.UnionType:
+        args = [a for a in get_args(annotation) if a is not type(None)]
+        if len(args) == 1:
+            annotation = args[0]
     try:
         if annotation is int:
             return int(value)
