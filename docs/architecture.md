@@ -131,9 +131,8 @@ Application-level tests call the app directly through `httpx.ASGITransport`, wit
 - Exceptions raised inside middleware itself are not caught by the framework.
 - Synchronous handlers and dependencies are not supported yet.
 
-## Roadmap
 
-**v0.1 (core)**
+## v0.1 (core)
 
 - [x] ASGI application
 - [x] `Request` and `Response`
@@ -142,11 +141,7 @@ Application-level tests call the app directly through `httpx.ASGITransport`, wit
 - [x] Automatic JSON responses
 - [x] Pydantic request bodies
 - [x] `Depends`
-- [ ] `HTTPException`, JSON errors, middleware
-- [ ] Sync handlers via a thread pool
-- [ ] Lifespan (startup/shutdown)
-- [ ] Documentation, CI, release to PyPI
-
-**After v0.1**
-
-Database layer with automatic schema updates, automatic CRUD (`app.crud(Model)`), authentication (`app.enable_auth()`), OpenAPI/Swagger documentation, CLI.
+- [x] `HTTPException`, JSON errors, middleware
+- [x] Sync handlers via a thread pool
+- [x] Lifespan (startup/shutdown)
+- [x] Documentation, CI, release to PyPI
