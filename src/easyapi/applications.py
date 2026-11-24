@@ -1,6 +1,7 @@
 """класс EasyAPI"""
 import json
 import logging
+from contextlib import asynccontextmanager
 
 from pydantic import ValidationError
 
@@ -14,10 +15,15 @@ from .routing import Router
 
 logger = logging.getLogger("easyapi")
 
+@asynccontextmanager
+async def _noop_lifespan(app):
+    yield
+
 
 class EasyAPI:
-    def __init__(self) -> None:
+    def __init__(self, lifespan=None) -> None:
         self.router = Router()
+        self._lifespan = lifespan or _noop_lifespan
         self._stack = self._dispatch
 
     def get(self, path: str):
@@ -39,6 +45,9 @@ class EasyAPI:
         self._stack = middleware_class(self._stack, **options)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "lifespan":
+            await self._handle_lifespan(receive, send)
+            return
         await self._stack(scope, receive, send)
 
     async def _dispatch(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -75,3 +84,23 @@ class EasyAPI:
         except Exception:
             logger.exception("Unhandled error in %s %s", request.method, request.path)
             return JSONResponse({"detail": "Internal Server Error"}, status=500)
+
+    async def _handle_lifespan(self, receive, send):
+        context = self._lifespan(self)
+
+        await receive()  # lifespan.startup
+        try:
+            await context.__aenter__()
+        except Exception as exc:
+            await send({"type": "lifespan.startup.failed", "message": str(exc)})
+            return
+        await send({"type": "lifespan.startup.complete"})
+
+        await receive()  # lifespan.shutdown
+        try:
+            await context.__aexit__(None, None, None)
+        except Exception as exc:
+            await send({"type": "lifespan.shutdown.failed", "message": str(exc)})
+            return
+        await send({"type": "lifespan.shutdown.complete"})
+

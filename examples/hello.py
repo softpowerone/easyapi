@@ -1,8 +1,18 @@
+from contextlib import asynccontextmanager
+
 from pydantic import BaseModel
 
 from easyapi import EasyAPI, Request, Response, Depends
 
-app = EasyAPI()
+@asynccontextmanager
+async def lifespan(app):
+    print("startup: opening resources")
+    yield
+    print("shutdown: closing resources")
+
+
+app = EasyAPI(lifespan=lifespan)
+
 
 @app.get("/")
 async def index(request: Request) -> Response:
