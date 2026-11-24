@@ -1,5 +1,5 @@
 """Удобный доступ к данным входящего HTTP-запроса."""
-
+from functools import cached_property
 from urllib.parse import parse_qsl
 
 
@@ -17,7 +17,7 @@ class Request:
     def path(self) -> str:
         return self._scope["path"]
 
-    @property
+    @cached_property
     def query_params(self) -> dict[str, str]:
         raw = self._scope["query_string"].decode()
         return dict(parse_qsl(raw))
