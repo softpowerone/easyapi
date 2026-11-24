@@ -5,6 +5,7 @@ import logging
 from pydantic import ValidationError
 
 from ._types import Scope, Receive, Send
+from .concurrency import call_maybe_sync
 from .exeptions import HTTPException
 from .params import build_kwargs
 from .requests import Request
@@ -68,7 +69,7 @@ class EasyAPI:
                 )
             except ValueError as exc:
                 return JSONResponse({"detail": str(exc)}, status=422)
-            return make_response(await handler(**kwargs))
+            return make_response(await call_maybe_sync(handler, **kwargs))
         except HTTPException as exc:
             return JSONResponse({"detail": exc.detail}, status=exc.status_code, headers=exc.headers)
         except Exception:

@@ -6,6 +6,7 @@ from typing import Any, get_type_hints
 from pydantic import BaseModel
 
 from ._types import Handler
+from .concurrency import call_maybe_sync
 from .dependencies import Depends
 from .requests import Request
 
@@ -39,10 +40,7 @@ async def build_kwargs(handler: Handler, request: Request, path_params: dict[str
             dep = param.default.dependency
             if dep not in cache:
                 sub_kwargs = await build_kwargs(dep, request, path_params, cache)
-                result = dep(**sub_kwargs)
-                if inspect.isawaitable(result):
-                    result = await result
-                cache[dep] = result
+                cache[dep] = await call_maybe_sync(dep, **sub_kwargs)
             kwargs[name] = cache[dep]
         elif is_model(hints.get(name)):
             raw = await request.body()

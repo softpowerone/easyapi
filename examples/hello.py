@@ -79,7 +79,11 @@ def require_token(token: str = ""):
         raise HTTPException(401, "Invalid token")
     return token
 
-
 @app.get("/secret")
 async def secret(t: str = Depends(require_token)):
     return {"secret": "42"}
+
+@app.get("/slow")
+def slow():
+    time.sleep(2)
+    return {"done": True}
