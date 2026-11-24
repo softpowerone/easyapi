@@ -1,5 +1,5 @@
 # easyapix
-[![CI](https://github.com/softpowerone/easeapix/actions/workflows/ci.yml/badge.svg)](https://github.com/softpowerone/waseapix/actions/workflows/ci.yml)
+[![CI](https://github.com/softpowerone/easyapix/actions/workflows/ci.yml/badge.svg)](https://github.com/softpowerone/easyapix/actions/workflows/ci.yml)
 Lightweight ASGI framework for building MVP backends quickly.
 
 > Status: alpha. The API may change before 1.0.
